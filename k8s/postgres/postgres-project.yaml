@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-project-pvc
+  namespace: rd-microservices
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-project
+  namespace: rd-microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-project
+  template:
+    metadata:
+      labels:
+        app: postgres-project
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:14-alpine
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-project-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-project-secret
+              key: password
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgres-project-secret
+              key: database
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-project-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-project
+  namespace: rd-microservices
+spec:
+  selector:
+    app: postgres-project
+  ports:
+  - port: 5432
+    targetPort: 5432
+  type: ClusterIP
+

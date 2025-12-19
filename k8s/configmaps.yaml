@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  namespace: rd-microservices
+data:
+  application.yml: |
+    server:
+      port: 8080
+    jwt:
+      secret: ${JWT_SECRET}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: rd-microservices
+data:
+  application.yml: |
+    server:
+      port: 8081
+    jwt:
+      secret: ${JWT_SECRET}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-config
+  namespace: rd-microservices
+data:
+  application.yml: |
+    server:
+      port: 8082
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: validation-config
+  namespace: rd-microservices
+data:
+  application.yml: |
+    server:
+      port: 8083
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finance-config
+  namespace: rd-microservices
+data:
+  application.yml: |
+    server:
+      port: 8084
+
