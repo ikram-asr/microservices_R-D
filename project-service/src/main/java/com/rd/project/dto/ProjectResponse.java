@@ -1,46 +1,43 @@
 package com.rd.project.dto;
 
-import com.rd.project.model.ProjectStatus;
 import java.time.LocalDateTime;
 
 public class ProjectResponse {
-    private Long id;
-    private String title;
+    private Long idProject;
+    private String nom;
     private String description;
-    private ProjectStatus status;
-    private Long researcherId;
+    private String statut;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public ProjectResponse() {
     }
 
-    public ProjectResponse(Long id, String title, String description, ProjectStatus status, 
-                          Long researcherId, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.title = title;
+    public ProjectResponse(Long idProject, String nom, String description, String statut, 
+                          LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.idProject = idProject;
+        this.nom = nom;
         this.description = description;
-        this.status = status;
-        this.researcherId = researcherId;
+        this.statut = statut;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 
-    public String getTitle() {
-        return title;
+    public String getNom() {
+        return nom;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public String getDescription() {
@@ -51,20 +48,12 @@ public class ProjectResponse {
         this.description = description;
     }
 
-    public ProjectStatus getStatus() {
-        return status;
+    public String getStatut() {
+        return statut;
     }
 
-    public void setStatus(ProjectStatus status) {
-        this.status = status;
-    }
-
-    public Long getResearcherId() {
-        return researcherId;
-    }
-
-    public void setResearcherId(Long researcherId) {
-        this.researcherId = researcherId;
+    public void setStatut(String statut) {
+        this.statut = statut;
     }
 
     public LocalDateTime getCreatedAt() {

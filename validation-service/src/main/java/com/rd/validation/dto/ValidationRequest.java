@@ -1,48 +1,39 @@
 package com.rd.validation.dto;
 
-import com.rd.validation.model.ValidationStatus;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ValidationRequest {
     @NotNull
-    private Long projectId;
+    private Long idProject;
 
-    private ValidationStatus status;
+    @NotBlank
+    private String nomTest;
 
-    private String comments;
+    private String statut = "PENDING";
 
-    private Integer validationLevel = 1;
-
-    public Long getProjectId() {
-        return projectId;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 
-    public ValidationStatus getStatus() {
-        return status;
+    public String getNomTest() {
+        return nomTest;
     }
 
-    public void setStatus(ValidationStatus status) {
-        this.status = status;
+    public void setNomTest(String nomTest) {
+        this.nomTest = nomTest;
     }
 
-    public String getComments() {
-        return comments;
+    public String getStatut() {
+        return statut;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
-    public Integer getValidationLevel() {
-        return validationLevel;
-    }
-
-    public void setValidationLevel(Integer validationLevel) {
-        this.validationLevel = validationLevel;
+    public void setStatut(String statut) {
+        this.statut = statut;
     }
 }
 

@@ -1,17 +1,16 @@
 package com.rd.finance.service;
 
-import com.rd.finance.dto.BudgetRequest;
-import com.rd.finance.dto.BudgetResponse;
-import com.rd.finance.dto.ExpenseRequest;
+import com.rd.finance.dto.*;
 import com.rd.finance.model.Budget;
 import com.rd.finance.model.Expense;
+import com.rd.finance.model.Team;
 import com.rd.finance.repository.BudgetRepository;
 import com.rd.finance.repository.ExpenseRepository;
+import com.rd.finance.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,14 +23,39 @@ public class FinanceService {
     @Autowired
     private ExpenseRepository expenseRepository;
 
+    @Autowired
+    private TeamRepository teamRepository;
+
+    // Team methods
+    public List<TeamResponse> getAllTeams() {
+        return teamRepository.findAll().stream()
+                .map(this::toTeamResponse)
+                .collect(Collectors.toList());
+    }
+
+    public TeamResponse getTeamById(Long id) {
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+        return toTeamResponse(team);
+    }
+
+    @Transactional
+    public TeamResponse createTeam(TeamRequest request) {
+        Team team = new Team();
+        team.setNom(request.getNom());
+        team = teamRepository.save(team);
+        return toTeamResponse(team);
+    }
+
+    // Budget methods
     public List<BudgetResponse> getAllBudgets() {
         return budgetRepository.findAll().stream()
                 .map(this::toBudgetResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<BudgetResponse> getBudgetsByProject(Long projectId) {
-        return budgetRepository.findByProjectId(projectId).stream()
+    public List<BudgetResponse> getBudgetsByProject(Long idProject) {
+        return budgetRepository.findByIdProject(idProject).stream()
                 .map(this::toBudgetResponse)
                 .collect(Collectors.toList());
     }
@@ -45,54 +69,68 @@ public class FinanceService {
     @Transactional
     public BudgetResponse createBudget(BudgetRequest request) {
         Budget budget = new Budget();
-        budget.setProjectId(request.getProjectId());
-        budget.setAllocatedAmount(request.getAllocatedAmount());
-        budget.setCurrency(request.getCurrency());
-        budget.setFiscalYear(request.getFiscalYear());
-        budget.setSpentAmount(BigDecimal.ZERO);
-
+        budget.setIdProject(request.getIdProject());
+        budget.setMontant(request.getMontant());
         budget = budgetRepository.save(budget);
         return toBudgetResponse(budget);
     }
 
-    @Transactional
-    public Expense createExpense(ExpenseRequest request, Long userId) {
-        Expense expense = new Expense();
-        expense.setProjectId(request.getProjectId());
-        expense.setBudgetId(request.getBudgetId());
-        expense.setAmount(request.getAmount());
-        expense.setDescription(request.getDescription());
-        expense.setCategory(request.getCategory());
-        expense.setCurrency(request.getCurrency());
-        expense.setCreatedBy(userId);
-
-        expense = expenseRepository.save(expense);
-
-        // Update budget spent amount
-        if (request.getBudgetId() != null) {
-            Budget budget = budgetRepository.findById(request.getBudgetId())
-                    .orElseThrow(() -> new RuntimeException("Budget not found"));
-            budget.setSpentAmount(budget.getSpentAmount().add(request.getAmount()));
-            budgetRepository.save(budget);
-        }
-
-        return expense;
+    // Expense methods
+    public List<ExpenseResponse> getAllExpenses() {
+        return expenseRepository.findAll().stream()
+                .map(this::toExpenseResponse)
+                .collect(Collectors.toList());
     }
 
-    public List<Expense> getExpensesByProject(Long projectId) {
-        return expenseRepository.findByProjectId(projectId);
+    public List<ExpenseResponse> getExpensesByProject(Long idProject) {
+        return expenseRepository.findByIdProject(idProject).stream()
+                .map(this::toExpenseResponse)
+                .collect(Collectors.toList());
+    }
+
+    public ExpenseResponse getExpenseById(Long id) {
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
+        return toExpenseResponse(expense);
+    }
+
+    @Transactional
+    public ExpenseResponse createExpense(ExpenseRequest request) {
+        Expense expense = new Expense();
+        expense.setIdProject(request.getIdProject());
+        expense.setIdTeam(request.getIdTeam());
+        expense.setMontant(request.getMontant());
+        expense = expenseRepository.save(expense);
+        return toExpenseResponse(expense);
+    }
+
+    // Mappers
+    private TeamResponse toTeamResponse(Team team) {
+        return new TeamResponse(
+                team.getIdTeam(),
+                team.getNom(),
+                team.getCreatedAt(),
+                team.getUpdatedAt()
+        );
     }
 
     private BudgetResponse toBudgetResponse(Budget budget) {
         return new BudgetResponse(
-                budget.getId(),
-                budget.getProjectId(),
-                budget.getAllocatedAmount(),
-                budget.getSpentAmount(),
-                budget.getCurrency(),
-                budget.getFiscalYear(),
+                budget.getIdBudget(),
+                budget.getIdProject(),
+                budget.getMontant(),
                 budget.getCreatedAt(),
                 budget.getUpdatedAt()
+        );
+    }
+
+    private ExpenseResponse toExpenseResponse(Expense expense) {
+        return new ExpenseResponse(
+                expense.getIdExpense(),
+                expense.getIdProject(),
+                expense.getIdTeam(),
+                expense.getMontant(),
+                expense.getCreatedAt()
         );
     }
 }

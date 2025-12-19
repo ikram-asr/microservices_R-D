@@ -5,65 +5,36 @@ import java.math.BigDecimal;
 
 public class ExpenseRequest {
     @NotNull
-    private Long projectId;
-
-    private Long budgetId;
+    private Long idProject;
 
     @NotNull
-    private BigDecimal amount;
+    private Long idTeam;
 
-    private String description;
+    @NotNull
+    private BigDecimal montant;
 
-    private String category;
-
-    private String currency = "EUR";
-
-    public Long getProjectId() {
-        return projectId;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 
-    public Long getBudgetId() {
-        return budgetId;
+    public Long getIdTeam() {
+        return idTeam;
     }
 
-    public void setBudgetId(Long budgetId) {
-        this.budgetId = budgetId;
+    public void setIdTeam(Long idTeam) {
+        this.idTeam = idTeam;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getMontant() {
+        return montant;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setMontant(BigDecimal montant) {
+        this.montant = montant;
     }
 }
 

@@ -2,28 +2,36 @@ package com.rd.validation.dto;
 
 import java.time.LocalDateTime;
 
-public class ValidationResponse {
+public class ValidationStepResponse {
+    private Long idStep;
     private Long idValidation;
-    private Long idProject;
-    private String nomTest;
+    private Long reviewerId;
     private String statut;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public ValidationResponse() {
+    public ValidationStepResponse() {
     }
 
-    public ValidationResponse(Long idValidation, Long idProject, String nomTest, String statut,
-                             LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ValidationStepResponse(Long idStep, Long idValidation, Long reviewerId, String statut,
+                                 LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.idStep = idStep;
         this.idValidation = idValidation;
-        this.idProject = idProject;
-        this.nomTest = nomTest;
+        this.reviewerId = reviewerId;
         this.statut = statut;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
+    public Long getIdStep() {
+        return idStep;
+    }
+
+    public void setIdStep(Long idStep) {
+        this.idStep = idStep;
+    }
+
     public Long getIdValidation() {
         return idValidation;
     }
@@ -32,20 +40,12 @@ public class ValidationResponse {
         this.idValidation = idValidation;
     }
 
-    public Long getIdProject() {
-        return idProject;
+    public Long getReviewerId() {
+        return reviewerId;
     }
 
-    public void setIdProject(Long idProject) {
-        this.idProject = idProject;
-    }
-
-    public String getNomTest() {
-        return nomTest;
-    }
-
-    public void setNomTest(String nomTest) {
-        this.nomTest = nomTest;
+    public void setReviewerId(Long reviewerId) {
+        this.reviewerId = reviewerId;
     }
 
     public String getStatut() {

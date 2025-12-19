@@ -1,12 +1,14 @@
 package com.rd.project.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class ProjectRequest {
+public class PhaseRequest {
     @NotBlank
     private String nom;
 
-    private String description;
+    @NotNull
+    private Long idProject;
 
     public String getNom() {
         return nom;
@@ -16,12 +18,12 @@ public class ProjectRequest {
         this.nom = nom;
     }
 
-    public String getDescription() {
-        return description;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 }
 

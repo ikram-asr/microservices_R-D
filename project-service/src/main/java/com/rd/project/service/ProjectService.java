@@ -3,7 +3,6 @@ package com.rd.project.service;
 import com.rd.project.dto.ProjectRequest;
 import com.rd.project.dto.ProjectResponse;
 import com.rd.project.model.Project;
-import com.rd.project.model.ProjectStatus;
 import com.rd.project.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,12 +23,6 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProjectResponse> getProjectsByResearcher(Long researcherId) {
-        return projectRepository.findByResearcherId(researcherId).stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
-    }
-
     public ProjectResponse getProjectById(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
@@ -37,27 +30,22 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectResponse createProject(ProjectRequest request, Long researcherId) {
+    public ProjectResponse createProject(ProjectRequest request) {
         Project project = new Project();
-        project.setTitle(request.getTitle());
+        project.setNom(request.getNom());
         project.setDescription(request.getDescription());
-        project.setStatus(ProjectStatus.DRAFT);
-        project.setResearcherId(researcherId);
+        project.setStatut("DRAFT");
 
         project = projectRepository.save(project);
         return toResponse(project);
     }
 
     @Transactional
-    public ProjectResponse updateProject(Long id, ProjectRequest request, Long userId) {
+    public ProjectResponse updateProject(Long id, ProjectRequest request) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        if (!project.getResearcherId().equals(userId)) {
-            throw new RuntimeException("Unauthorized to update this project");
-        }
-
-        project.setTitle(request.getTitle());
+        project.setNom(request.getNom());
         project.setDescription(request.getDescription());
 
         project = projectRepository.save(project);
@@ -65,33 +53,28 @@ public class ProjectService {
     }
 
     @Transactional
-    public void deleteProject(Long id, Long userId) {
+    public void deleteProject(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        if (!project.getResearcherId().equals(userId)) {
-            throw new RuntimeException("Unauthorized to delete this project");
-        }
 
         projectRepository.delete(project);
     }
 
     @Transactional
-    public ProjectResponse updateStatus(Long id, ProjectStatus status) {
+    public ProjectResponse updateStatus(Long id, String statut) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
-        project.setStatus(status);
+        project.setStatut(statut);
         project = projectRepository.save(project);
         return toResponse(project);
     }
 
     private ProjectResponse toResponse(Project project) {
         return new ProjectResponse(
-                project.getId(),
-                project.getTitle(),
+                project.getIdProject(),
+                project.getNom(),
                 project.getDescription(),
-                project.getStatus(),
-                project.getResearcherId(),
+                project.getStatut(),
                 project.getCreatedAt(),
                 project.getUpdatedAt()
         );

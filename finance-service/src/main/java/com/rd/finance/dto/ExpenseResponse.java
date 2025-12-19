@@ -3,32 +3,31 @@ package com.rd.finance.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class BudgetResponse {
-    private Long idBudget;
+public class ExpenseResponse {
+    private Long idExpense;
     private Long idProject;
+    private Long idTeam;
     private BigDecimal montant;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    public BudgetResponse() {
+    public ExpenseResponse() {
     }
 
-    public BudgetResponse(Long idBudget, Long idProject, BigDecimal montant,
-                         LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.idBudget = idBudget;
+    public ExpenseResponse(Long idExpense, Long idProject, Long idTeam, BigDecimal montant, LocalDateTime createdAt) {
+        this.idExpense = idExpense;
         this.idProject = idProject;
+        this.idTeam = idTeam;
         this.montant = montant;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
-    public Long getIdBudget() {
-        return idBudget;
+    public Long getIdExpense() {
+        return idExpense;
     }
 
-    public void setIdBudget(Long idBudget) {
-        this.idBudget = idBudget;
+    public void setIdExpense(Long idExpense) {
+        this.idExpense = idExpense;
     }
 
     public Long getIdProject() {
@@ -37,6 +36,14 @@ public class BudgetResponse {
 
     public void setIdProject(Long idProject) {
         this.idProject = idProject;
+    }
+
+    public Long getIdTeam() {
+        return idTeam;
+    }
+
+    public void setIdTeam(Long idTeam) {
+        this.idTeam = idTeam;
     }
 
     public BigDecimal getMontant() {
@@ -53,14 +60,6 @@ public class BudgetResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
 

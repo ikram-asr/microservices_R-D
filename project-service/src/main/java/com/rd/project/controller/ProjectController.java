@@ -2,7 +2,6 @@ package com.rd.project.controller;
 
 import com.rd.project.dto.ProjectRequest;
 import com.rd.project.dto.ProjectResponse;
-import com.rd.project.model.ProjectStatus;
 import com.rd.project.service.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +23,6 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getAllProjects());
     }
 
-    @GetMapping("/researcher/{researcherId}")
-    public ResponseEntity<List<ProjectResponse>> getProjectsByResearcher(@PathVariable Long researcherId) {
-        return ResponseEntity.ok(projectService.getProjectsByResearcher(researcherId));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long id) {
         try {
@@ -41,11 +35,9 @@ public class ProjectController {
 
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(
-            @Valid @RequestBody ProjectRequest request,
-            @RequestHeader("X-User-Id") String userIdHeader) {
+            @Valid @RequestBody ProjectRequest request) {
         try {
-            Long userId = Long.parseLong(userIdHeader);
-            ProjectResponse project = projectService.createProject(request, userId);
+            ProjectResponse project = projectService.createProject(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(project);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -55,11 +47,9 @@ public class ProjectController {
     @PutMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(
             @PathVariable Long id,
-            @Valid @RequestBody ProjectRequest request,
-            @RequestHeader("X-User-Id") String userIdHeader) {
+            @Valid @RequestBody ProjectRequest request) {
         try {
-            Long userId = Long.parseLong(userIdHeader);
-            ProjectResponse project = projectService.updateProject(id, request, userId);
+            ProjectResponse project = projectService.updateProject(id, request);
             return ResponseEntity.ok(project);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -67,12 +57,9 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") String userIdHeader) {
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         try {
-            Long userId = Long.parseLong(userIdHeader);
-            projectService.deleteProject(id, userId);
+            projectService.deleteProject(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -82,9 +69,9 @@ public class ProjectController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<ProjectResponse> updateStatus(
             @PathVariable Long id,
-            @RequestParam ProjectStatus status) {
+            @RequestParam String statut) {
         try {
-            ProjectResponse project = projectService.updateStatus(id, status);
+            ProjectResponse project = projectService.updateStatus(id, statut);
             return ResponseEntity.ok(project);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

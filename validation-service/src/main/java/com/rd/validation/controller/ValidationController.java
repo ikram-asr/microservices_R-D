@@ -23,9 +23,9 @@ public class ValidationController {
         return ResponseEntity.ok(validationService.getAllValidations());
     }
 
-    @GetMapping("/project/{projectId}")
-    public ResponseEntity<List<ValidationResponse>> getValidationsByProject(@PathVariable Long projectId) {
-        return ResponseEntity.ok(validationService.getValidationsByProject(projectId));
+    @GetMapping("/project/{idProject}")
+    public ResponseEntity<List<ValidationResponse>> getValidationsByProject(@PathVariable Long idProject) {
+        return ResponseEntity.ok(validationService.getValidationsByProject(idProject));
     }
 
     @GetMapping("/{id}")
@@ -40,11 +40,9 @@ public class ValidationController {
 
     @PostMapping
     public ResponseEntity<ValidationResponse> createValidation(
-            @Valid @RequestBody ValidationRequest request,
-            @RequestHeader("X-User-Id") String userIdHeader) {
+            @Valid @RequestBody ValidationRequest request) {
         try {
-            Long userId = Long.parseLong(userIdHeader);
-            ValidationResponse validation = validationService.createValidation(request, userId);
+            ValidationResponse validation = validationService.createValidation(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(validation);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -54,11 +52,9 @@ public class ValidationController {
     @PutMapping("/{id}")
     public ResponseEntity<ValidationResponse> updateValidation(
             @PathVariable Long id,
-            @Valid @RequestBody ValidationRequest request,
-            @RequestHeader("X-User-Id") String userIdHeader) {
+            @Valid @RequestBody ValidationRequest request) {
         try {
-            Long userId = Long.parseLong(userIdHeader);
-            ValidationResponse validation = validationService.updateValidation(id, request, userId);
+            ValidationResponse validation = validationService.updateValidation(id, request);
             return ResponseEntity.ok(validation);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
