@@ -1,6 +1,6 @@
-package com.rd.finance.repository;
+package com.rd.finance.dao.repositories;
 
-import com.rd.finance.model.Team;
+import com.rd.finance.dao.entities.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

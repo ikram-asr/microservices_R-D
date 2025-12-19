@@ -1,4 +1,4 @@
-package com.rd.auth.model;
+package com.rd.auth.dao.entities;
 
 public enum Role {
     ADMIN,

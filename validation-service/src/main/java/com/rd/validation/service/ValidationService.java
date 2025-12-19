@@ -2,8 +2,8 @@ package com.rd.validation.service;
 
 import com.rd.validation.dto.ValidationRequest;
 import com.rd.validation.dto.ValidationResponse;
-import com.rd.validation.model.Validation;
-import com.rd.validation.repository.ValidationRepository;
+import com.rd.validation.dao.entities.Validation;
+import com.rd.validation.dao.repositories.ValidationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

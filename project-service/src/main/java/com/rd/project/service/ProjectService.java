@@ -2,8 +2,8 @@ package com.rd.project.service;
 
 import com.rd.project.dto.ProjectRequest;
 import com.rd.project.dto.ProjectResponse;
-import com.rd.project.model.Project;
-import com.rd.project.repository.ProjectRepository;
+import com.rd.project.dao.entities.Project;
+import com.rd.project.dao.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

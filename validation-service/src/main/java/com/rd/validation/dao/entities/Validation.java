@@ -1,25 +1,24 @@
-package com.rd.finance.model;
+package com.rd.validation.dao.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "budgets")
-public class Budget {
+@Table(name = "validations")
+public class Validation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_budget")
-    private Long idBudget;
+    @Column(name = "id_validation")
+    private Long idValidation;
 
     @Column(name = "id_project")
-    @NotNull
     private Long idProject;
 
-    @Column(name = "montant", precision = 19, scale = 2)
-    @NotNull
-    private BigDecimal montant;
+    @Column(name = "nom_test")
+    private String nomTest;
+
+    @Column(name = "statut")
+    private String statut = "PENDING";
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -39,12 +38,12 @@ public class Budget {
     }
 
     // Getters and Setters
-    public Long getIdBudget() {
-        return idBudget;
+    public Long getIdValidation() {
+        return idValidation;
     }
 
-    public void setIdBudget(Long idBudget) {
-        this.idBudget = idBudget;
+    public void setIdValidation(Long idValidation) {
+        this.idValidation = idValidation;
     }
 
     public Long getIdProject() {
@@ -55,12 +54,20 @@ public class Budget {
         this.idProject = idProject;
     }
 
-    public BigDecimal getMontant() {
-        return montant;
+    public String getNomTest() {
+        return nomTest;
     }
 
-    public void setMontant(BigDecimal montant) {
-        this.montant = montant;
+    public void setNomTest(String nomTest) {
+        this.nomTest = nomTest;
+    }
+
+    public String getStatut() {
+        return statut;
+    }
+
+    public void setStatut(String statut) {
+        this.statut = statut;
     }
 
     public LocalDateTime getCreatedAt() {

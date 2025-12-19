@@ -1,6 +1,6 @@
-package com.rd.validation.repository;
+package com.rd.validation.dao.repositories;
 
-import com.rd.validation.model.ValidationStep;
+import com.rd.validation.dao.entities.ValidationStep;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

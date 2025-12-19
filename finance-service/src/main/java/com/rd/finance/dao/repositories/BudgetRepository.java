@@ -1,11 +1,10 @@
-package com.rd.finance.repository;
+package com.rd.finance.dao.repositories;
 
-import com.rd.finance.model.Budget;
+import com.rd.finance.dao.entities.Budget;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {

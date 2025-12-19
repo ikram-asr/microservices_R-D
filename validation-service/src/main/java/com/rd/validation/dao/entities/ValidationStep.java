@@ -1,4 +1,4 @@
-package com.rd.validation.model;
+package com.rd.validation.dao.entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

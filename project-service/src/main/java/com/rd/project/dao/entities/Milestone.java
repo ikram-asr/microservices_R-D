@@ -1,4 +1,4 @@
-package com.rd.project.model;
+package com.rd.project.dao.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

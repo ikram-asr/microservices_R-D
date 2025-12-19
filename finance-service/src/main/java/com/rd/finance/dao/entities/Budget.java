@@ -1,4 +1,4 @@
-package com.rd.finance.model;
+package com.rd.finance.dao.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -6,20 +6,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "expenses")
-public class Expense {
+@Table(name = "budgets")
+public class Budget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_expense")
-    private Long idExpense;
+    @Column(name = "id_budget")
+    private Long idBudget;
 
     @Column(name = "id_project")
     @NotNull
     private Long idProject;
-
-    @Column(name = "id_team")
-    @NotNull
-    private Long idTeam;
 
     @Column(name = "montant", precision = 19, scale = 2)
     @NotNull
@@ -28,18 +24,27 @@ public class Expense {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Long getIdExpense() {
-        return idExpense;
+    public Long getIdBudget() {
+        return idBudget;
     }
 
-    public void setIdExpense(Long idExpense) {
-        this.idExpense = idExpense;
+    public void setIdBudget(Long idBudget) {
+        this.idBudget = idBudget;
     }
 
     public Long getIdProject() {
@@ -48,14 +53,6 @@ public class Expense {
 
     public void setIdProject(Long idProject) {
         this.idProject = idProject;
-    }
-
-    public Long getIdTeam() {
-        return idTeam;
-    }
-
-    public void setIdTeam(Long idTeam) {
-        this.idTeam = idTeam;
     }
 
     public BigDecimal getMontant() {
@@ -72,6 +69,14 @@ public class Expense {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
 

@@ -1,12 +1,12 @@
 package com.rd.finance.service;
 
 import com.rd.finance.dto.*;
-import com.rd.finance.model.Budget;
-import com.rd.finance.model.Expense;
-import com.rd.finance.model.Team;
-import com.rd.finance.repository.BudgetRepository;
-import com.rd.finance.repository.ExpenseRepository;
-import com.rd.finance.repository.TeamRepository;
+import com.rd.finance.dao.entities.Budget;
+import com.rd.finance.dao.entities.Expense;
+import com.rd.finance.dao.entities.Team;
+import com.rd.finance.dao.repositories.BudgetRepository;
+import com.rd.finance.dao.repositories.ExpenseRepository;
+import com.rd.finance.dao.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

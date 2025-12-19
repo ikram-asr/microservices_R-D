@@ -1,6 +1,6 @@
-package com.rd.auth.repository;
+package com.rd.auth.dao.repositories;
 
-import com.rd.auth.model.User;
+import com.rd.auth.dao.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

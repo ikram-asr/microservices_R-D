@@ -1,26 +1,20 @@
-package com.rd.project.model;
+package com.rd.finance.dao.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "projects")
-public class Project {
+@Table(name = "teams")
+public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_project")
-    private Long idProject;
+    @Column(name = "id_team")
+    private Long idTeam;
 
     @NotBlank
     @Column(name = "nom")
     private String nom;
-
-    @Column(columnDefinition = "TEXT", name = "description")
-    private String description;
-
-    @Column(name = "statut")
-    private String statut = "DRAFT";
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -40,12 +34,12 @@ public class Project {
     }
 
     // Getters and Setters
-    public Long getIdProject() {
-        return idProject;
+    public Long getIdTeam() {
+        return idTeam;
     }
 
-    public void setIdProject(Long idProject) {
-        this.idProject = idProject;
+    public void setIdTeam(Long idTeam) {
+        this.idTeam = idTeam;
     }
 
     public String getNom() {
@@ -54,22 +48,6 @@ public class Project {
 
     public void setNom(String nom) {
         this.nom = nom;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
     }
 
     public LocalDateTime getCreatedAt() {

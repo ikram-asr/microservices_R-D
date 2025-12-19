@@ -1,6 +1,6 @@
-package com.rd.project.repository;
+package com.rd.project.dao.repositories;
 
-import com.rd.project.model.Phase;
+import com.rd.project.dao.entities.Phase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
