@@ -1,4 +1,4 @@
-# Modèle Conceptuel de Données (MCD)
+# Modèle Conceptuel de Données (MCD) - Version Mise à Jour
 
 ## Vue d'ensemble
 
@@ -10,7 +10,7 @@ Chaque microservice possède sa propre base de données PostgreSQL pour garantir
 
 | Colonne | Type | Contraintes | Description |
 |---------|------|-------------|-------------|
-| id | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| id_user | BIGSERIAL | PRIMARY KEY | Identifiant unique |
 | username | VARCHAR(50) | UNIQUE, NOT NULL | Nom d'utilisateur |
 | email | VARCHAR(100) | UNIQUE, NOT NULL | Email |
 | password | VARCHAR(255) | NOT NULL | Mot de passe hashé (BCrypt) |
@@ -28,7 +28,7 @@ Chaque microservice possède sa propre base de données PostgreSQL pour garantir
 ┌─────────────────┐
 │     users       │
 ├─────────────────┤
-│ id (PK)         │
+│ id_user (PK)    │
 │ username (UK)   │
 │ email (UK)      │
 │ password        │
@@ -45,28 +45,73 @@ Chaque microservice possède sa propre base de données PostgreSQL pour garantir
 
 | Colonne | Type | Contraintes | Description |
 |---------|------|-------------|-------------|
-| id | BIGSERIAL | PRIMARY KEY | Identifiant unique |
-| title | VARCHAR(255) | NOT NULL | Titre du projet |
+| id_project | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| nom | VARCHAR(255) | NOT NULL | Nom du projet |
 | description | TEXT | NULL | Description détaillée |
-| status | VARCHAR(20) | NOT NULL, DEFAULT 'DRAFT' | Statut : DRAFT, SUBMITTED, IN_REVIEW, APPROVED, REJECTED |
-| researcher_id | BIGINT | NOT NULL | ID du chercheur (référence vers auth-service) |
+| statut | VARCHAR(20) | NOT NULL, DEFAULT 'DRAFT' | Statut : DRAFT, SUBMITTED, IN_REVIEW, APPROVED, REJECTED |
+| created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+| updated_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de mise à jour |
+
+### Table : `phases`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id_phase | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| nom | VARCHAR(255) | NOT NULL | Nom de la phase |
+| id_project | BIGINT | NOT NULL, FK → projects.id_project | ID du projet |
+| created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+| updated_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de mise à jour |
+
+### Table : `milestones`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id_milestone | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| nom | VARCHAR(255) | NOT NULL | Nom du milestone |
+| id_phase | BIGINT | NOT NULL, FK → phases.id_phase | ID de la phase |
 | created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
 | updated_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de mise à jour |
 
 **Index :**
-- `idx_projects_researcher_id` sur `researcher_id`
-- `idx_projects_status` sur `status`
+- `idx_projects_statut` sur `projects.statut`
+- `idx_phases_project_id` sur `phases.id_project`
+- `idx_milestones_phase_id` sur `milestones.id_phase`
 
 **Diagramme :**
 ```
 ┌─────────────────┐
 │    projects     │
 ├─────────────────┤
-│ id (PK)         │
-│ title           │
+│ id_project (PK)│
+│ nom             │
 │ description     │
-│ status          │
-│ researcher_id   │
+│ statut          │
+│ created_at      │
+│ updated_at      │
+└────────┬────────┘
+         │
+         │ 1:N
+         │
+         ▼
+┌─────────────────┐
+│     phases      │
+├─────────────────┤
+│ id_phase (PK)   │
+│ nom             │
+│ id_project (FK) │
+│ created_at      │
+│ updated_at      │
+└────────┬────────┘
+         │
+         │ 1:N
+         │
+         ▼
+┌─────────────────┐
+│   milestones    │
+├─────────────────┤
+│ id_milestone(PK)│
+│ nom             │
+│ id_phase (FK)   │
 │ created_at      │
 │ updated_at      │
 └─────────────────┘
@@ -78,110 +123,181 @@ Chaque microservice possède sa propre base de données PostgreSQL pour garantir
 
 | Colonne | Type | Contraintes | Description |
 |---------|------|-------------|-------------|
-| id | BIGSERIAL | PRIMARY KEY | Identifiant unique |
-| project_id | BIGINT | NOT NULL | ID du projet (référence vers project-service) |
-| validator_id | BIGINT | NOT NULL | ID du validateur (référence vers auth-service) |
-| status | VARCHAR(20) | NOT NULL, DEFAULT 'PENDING' | Statut : PENDING, APPROVED, REJECTED, REQUIRES_REVISION |
-| comments | TEXT | NULL | Commentaires du validateur |
-| validation_level | INTEGER | NOT NULL, DEFAULT 1 | Niveau : 1=Initial, 2=Senior, 3=Final |
+| id_validation | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| id_project | BIGINT | NOT NULL | ID du projet (référence logique vers project-service) |
+| nom_test | VARCHAR(255) | NOT NULL | Nom du test de validation |
+| statut | VARCHAR(20) | NOT NULL, DEFAULT 'PENDING' | Statut : PENDING, APPROVED, REJECTED, REQUIRES_REVISION |
 | created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
 | updated_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de mise à jour |
 
+### Table : `validation_steps`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id_step | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| id_validation | BIGINT | NOT NULL, FK → validations.id_validation | ID de la validation |
+| reviewer_id | BIGINT | NOT NULL | ID du reviewer (référence logique vers auth-service.users.id_user) |
+| statut | VARCHAR(20) | NOT NULL, DEFAULT 'PENDING' | Statut de l'étape |
+| created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+| updated_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de mise à jour |
+
+### Table : `attachments`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id_attachment | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| id_step | BIGINT | NOT NULL, FK → validation_steps.id_step | ID de l'étape de validation |
+| filepath | VARCHAR(500) | NOT NULL | Chemin du fichier |
+| created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+
 **Index :**
-- `idx_validations_project_id` sur `project_id`
-- `idx_validations_validator_id` sur `validator_id`
-- `idx_validations_status` sur `status`
+- `idx_validations_project_id` sur `validations.id_project`
+- `idx_validations_statut` sur `validations.statut`
+- `idx_validation_steps_validation_id` sur `validation_steps.id_validation`
+- `idx_validation_steps_reviewer_id` sur `validation_steps.reviewer_id`
+- `idx_attachments_step_id` sur `attachments.id_step`
 
 **Diagramme :**
 ```
 ┌─────────────────┐
 │   validations   │
 ├─────────────────┤
-│ id (PK)         │
-│ project_id      │
-│ validator_id    │
-│ status          │
-│ comments        │
-│ validation_level│
+│ id_validation(PK)│
+│ id_project      │
+│ nom_test        │
+│ statut          │
 │ created_at      │
 │ updated_at      │
+└────────┬────────┘
+         │
+         │ 1:N
+         │
+         ▼
+┌─────────────────┐
+│ validation_steps│
+├─────────────────┤
+│ id_step (PK)    │
+│ id_validation(FK)│
+│ reviewer_id     │
+│ statut          │
+│ created_at      │
+│ updated_at      │
+└────────┬────────┘
+         │
+         │ 1:N
+         │
+         ▼
+┌─────────────────┐
+│   attachments   │
+├─────────────────┤
+│ id_attachment(PK)│
+│ id_step (FK)    │
+│ filepath        │
+│ created_at      │
 └─────────────────┘
 ```
 
 ## 4. Finance-Service - Base de données : `finance_db`
 
+### Table : `teams`
+
+| Colonne | Type | Contraintes | Description |
+|---------|------|-------------|-------------|
+| id_team | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| nom | VARCHAR(255) | NOT NULL | Nom de l'équipe |
+| created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
+| updated_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de mise à jour |
+
 ### Table : `budgets`
 
 | Colonne | Type | Contraintes | Description |
 |---------|------|-------------|-------------|
-| id | BIGSERIAL | PRIMARY KEY | Identifiant unique |
-| project_id | BIGINT | NOT NULL | ID du projet (référence vers project-service) |
-| allocated_amount | DECIMAL(19,2) | NOT NULL | Montant alloué |
-| spent_amount | DECIMAL(19,2) | NOT NULL, DEFAULT 0 | Montant dépensé |
-| currency | VARCHAR(10) | NOT NULL, DEFAULT 'EUR' | Devise |
-| fiscal_year | INTEGER | NULL | Année fiscale |
+| id_budget | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| id_project | BIGINT | NOT NULL | ID du projet (référence logique vers project-service) |
+| montant | DECIMAL(19,2) | NOT NULL | Montant du budget |
 | created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
 | updated_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de mise à jour |
-
-**Index :**
-- `idx_budgets_project_id` sur `project_id`
 
 ### Table : `expenses`
 
 | Colonne | Type | Contraintes | Description |
 |---------|------|-------------|-------------|
-| id | BIGSERIAL | PRIMARY KEY | Identifiant unique |
-| project_id | BIGINT | NOT NULL | ID du projet |
-| budget_id | BIGINT | NULL | ID du budget (FK vers budgets) |
-| amount | DECIMAL(19,2) | NOT NULL | Montant de la dépense |
-| description | TEXT | NULL | Description |
-| category | VARCHAR(50) | NULL | Catégorie : EQUIPMENT, TRAVEL, PERSONNEL, OTHER |
-| currency | VARCHAR(10) | NOT NULL, DEFAULT 'EUR' | Devise |
-| expense_date | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de la dépense |
-| created_by | BIGINT | NULL | ID utilisateur créateur |
+| id_expense | BIGSERIAL | PRIMARY KEY | Identifiant unique |
+| id_project | BIGINT | NOT NULL | ID du projet (référence logique vers project-service) |
+| id_team | BIGINT | NOT NULL, FK → teams.id_team | ID de l'équipe |
+| montant | DECIMAL(19,2) | NOT NULL | Montant de la dépense |
 | created_at | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Date de création |
 
 **Index :**
-- `idx_expenses_project_id` sur `project_id`
-- `idx_expenses_budget_id` sur `budget_id`
-
-**Contrainte de clé étrangère :**
-- `budget_id` → `budgets.id`
+- `idx_budgets_project_id` sur `budgets.id_project`
+- `idx_expenses_project_id` sur `expenses.id_project`
+- `idx_expenses_team_id` sur `expenses.id_team`
 
 **Diagramme :**
 ```
 ┌─────────────────┐         ┌─────────────────┐
-│    budgets      │         │    expenses     │
+│     teams       │         │     budgets     │
 ├─────────────────┤         ├─────────────────┤
-│ id (PK)         │◄────────│ budget_id (FK)  │
-│ project_id      │         │ id (PK)         │
-│ allocated_amount│         │ project_id      │
-│ spent_amount    │         │ amount          │
-│ currency        │         │ description     │
-│ fiscal_year     │         │ category        │
-│ created_at      │         │ currency        │
-│ updated_at      │         │ expense_date    │
-└─────────────────┘         │ created_by      │
-                            │ created_at      │
-                            └─────────────────┘
+│ id_team (PK)    │         │ id_budget (PK)  │
+│ nom             │         │ id_project      │
+│ created_at      │         │ montant         │
+│ updated_at      │         │ created_at      │
+└────────┬────────┘         │ updated_at      │
+         │                  └─────────────────┘
+         │ 1:N
+         │
+         ▼
+┌─────────────────┐
+│    expenses     │
+├─────────────────┤
+│ id_expense (PK) │
+│ id_project      │
+│ id_team (FK)    │
+│ montant         │
+│ created_at      │
+└─────────────────┘
 ```
 
 ## Relations entre microservices
 
 ```
-auth_db (users)
+auth_db (users.id_user)
     │
-    ├─── researcher_id ───► project_db (projects.researcher_id)
-    │
-    └─── validator_id ────► validation_db (validations.validator_id)
+    └─── reviewer_id ───► validation_db (validation_steps.reviewer_id)
     
-project_db (projects)
+project_db (projects.id_project)
     │
-    ├─── project_id ───────► validation_db (validations.project_id)
+    ├─── id_project ───────► validation_db (validations.id_project)
     │
-    └─── project_id ───────► finance_db (budgets.project_id)
-                              finance_db (expenses.project_id)
+    ├─── id_project ───────► finance_db (budgets.id_project)
+    │
+    └─── id_project ───────► finance_db (expenses.id_project)
+
+project_db (phases.id_phase)
+    │
+    └─── id_phase ────────► project_db (milestones.id_phase)
 ```
 
-**Note :** Les relations sont logiques (par ID), pas des clés étrangères physiques car chaque service a sa propre base de données.
+**Note :** Les relations entre microservices sont logiques (par ID), pas des clés étrangères physiques car chaque service a sa propre base de données. Les relations à l'intérieur d'un même service utilisent des clés étrangères physiques.
 
+## Résumé des Relations
+
+### Relations Physiques (FK dans la même base)
+
+1. **project_db :**
+   - `phases.id_project` → `projects.id_project`
+   - `milestones.id_phase` → `phases.id_phase`
+
+2. **validation_db :**
+   - `validation_steps.id_validation` → `validations.id_validation`
+   - `attachments.id_step` → `validation_steps.id_step`
+
+3. **finance_db :**
+   - `expenses.id_team` → `teams.id_team`
+
+### Relations Logiques (entre microservices)
+
+1. `validation_steps.reviewer_id` → `auth_db.users.id_user`
+2. `validations.id_project` → `project_db.projects.id_project`
+3. `budgets.id_project` → `project_db.projects.id_project`
+4. `expenses.id_project` → `project_db.projects.id_project`

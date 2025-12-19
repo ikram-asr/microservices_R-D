@@ -1,26 +1,24 @@
-package com.rd.project.model;
+package com.rd.validation.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "projects")
-public class Project {
+@Table(name = "validation_steps")
+public class ValidationStep {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_project")
-    private Long idProject;
+    @Column(name = "id_step")
+    private Long idStep;
 
-    @NotBlank
-    @Column(name = "nom")
-    private String nom;
+    @Column(name = "id_validation")
+    private Long idValidation;
 
-    @Column(columnDefinition = "TEXT", name = "description")
-    private String description;
+    @Column(name = "reviewer_id")
+    private Long reviewerId;
 
     @Column(name = "statut")
-    private String statut = "DRAFT";
+    private String statut = "PENDING";
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -40,28 +38,28 @@ public class Project {
     }
 
     // Getters and Setters
-    public Long getIdProject() {
-        return idProject;
+    public Long getIdStep() {
+        return idStep;
     }
 
-    public void setIdProject(Long idProject) {
-        this.idProject = idProject;
+    public void setIdStep(Long idStep) {
+        this.idStep = idStep;
     }
 
-    public String getNom() {
-        return nom;
+    public Long getIdValidation() {
+        return idValidation;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setIdValidation(Long idValidation) {
+        this.idValidation = idValidation;
     }
 
-    public String getDescription() {
-        return description;
+    public Long getReviewerId() {
+        return reviewerId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setReviewerId(Long reviewerId) {
+        this.reviewerId = reviewerId;
     }
 
     public String getStatut() {

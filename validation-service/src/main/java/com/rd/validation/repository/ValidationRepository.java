@@ -9,8 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ValidationRepository extends JpaRepository<Validation, Long> {
-    List<Validation> findByProjectId(Long projectId);
-    List<Validation> findByValidatorId(Long validatorId);
-    List<Validation> findByStatus(ValidationStatus status);
+    List<Validation> findByIdProject(Long idProject);
+    List<Validation> findByStatut(String statut);
 }
 

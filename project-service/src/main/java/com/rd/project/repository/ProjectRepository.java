@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    List<Project> findByResearcherId(Long researcherId);
-    List<Project> findByStatus(ProjectStatus status);
+    List<Project> findByStatut(String statut);
 }
 

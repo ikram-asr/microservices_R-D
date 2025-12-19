@@ -5,22 +5,19 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "projects")
-public class Project {
+@Table(name = "phases")
+public class Phase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_project")
-    private Long idProject;
+    @Column(name = "id_phase")
+    private Long idPhase;
 
     @NotBlank
     @Column(name = "nom")
     private String nom;
 
-    @Column(columnDefinition = "TEXT", name = "description")
-    private String description;
-
-    @Column(name = "statut")
-    private String statut = "DRAFT";
+    @Column(name = "id_project")
+    private Long idProject;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -40,12 +37,12 @@ public class Project {
     }
 
     // Getters and Setters
-    public Long getIdProject() {
-        return idProject;
+    public Long getIdPhase() {
+        return idPhase;
     }
 
-    public void setIdProject(Long idProject) {
-        this.idProject = idProject;
+    public void setIdPhase(Long idPhase) {
+        this.idPhase = idPhase;
     }
 
     public String getNom() {
@@ -56,20 +53,12 @@ public class Project {
         this.nom = nom;
     }
 
-    public String getDescription() {
-        return description;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 
     public LocalDateTime getCreatedAt() {

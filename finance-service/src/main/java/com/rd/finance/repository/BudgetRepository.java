@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
-    List<Budget> findByProjectId(Long projectId);
-    Optional<Budget> findByProjectIdAndFiscalYear(Long projectId, Integer fiscalYear);
+    List<Budget> findByIdProject(Long idProject);
 }
 

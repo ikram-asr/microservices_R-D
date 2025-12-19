@@ -8,22 +8,17 @@ import java.time.LocalDateTime;
 public class Validation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_validation")
+    private Long idValidation;
 
-    @Column(name = "project_id")
-    private Long projectId;
+    @Column(name = "id_project")
+    private Long idProject;
 
-    @Column(name = "validator_id")
-    private Long validatorId;
+    @Column(name = "nom_test")
+    private String nomTest;
 
-    @Enumerated(EnumType.STRING)
-    private ValidationStatus status = ValidationStatus.PENDING;
-
-    @Column(columnDefinition = "TEXT")
-    private String comments;
-
-    @Column(name = "validation_level")
-    private Integer validationLevel = 1; // 1 = Initial, 2 = Senior, 3 = Final
+    @Column(name = "statut")
+    private String statut = "PENDING";
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -43,52 +38,36 @@ public class Validation {
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
+    public Long getIdValidation() {
+        return idValidation;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdValidation(Long idValidation) {
+        this.idValidation = idValidation;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 
-    public Long getValidatorId() {
-        return validatorId;
+    public String getNomTest() {
+        return nomTest;
     }
 
-    public void setValidatorId(Long validatorId) {
-        this.validatorId = validatorId;
+    public void setNomTest(String nomTest) {
+        this.nomTest = nomTest;
     }
 
-    public ValidationStatus getStatus() {
-        return status;
+    public String getStatut() {
+        return statut;
     }
 
-    public void setStatus(ValidationStatus status) {
-        this.status = status;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
-    public Integer getValidationLevel() {
-        return validationLevel;
-    }
-
-    public void setValidationLevel(Integer validationLevel) {
-        this.validationLevel = validationLevel;
+    public void setStatut(String statut) {
+        this.statut = statut;
     }
 
     public LocalDateTime getCreatedAt() {

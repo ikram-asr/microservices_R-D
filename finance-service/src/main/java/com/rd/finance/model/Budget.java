@@ -10,24 +10,16 @@ import java.time.LocalDateTime;
 public class Budget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_budget")
+    private Long idBudget;
 
-    @Column(name = "project_id")
+    @Column(name = "id_project")
     @NotNull
-    private Long projectId;
+    private Long idProject;
 
-    @Column(name = "allocated_amount", precision = 19, scale = 2)
+    @Column(name = "montant", precision = 19, scale = 2)
     @NotNull
-    private BigDecimal allocatedAmount;
-
-    @Column(name = "spent_amount", precision = 19, scale = 2)
-    private BigDecimal spentAmount = BigDecimal.ZERO;
-
-    @Column(name = "currency")
-    private String currency = "EUR";
-
-    @Column(name = "fiscal_year")
-    private Integer fiscalYear;
+    private BigDecimal montant;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -47,52 +39,28 @@ public class Budget {
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
+    public Long getIdBudget() {
+        return idBudget;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdBudget(Long idBudget) {
+        this.idBudget = idBudget;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 
-    public BigDecimal getAllocatedAmount() {
-        return allocatedAmount;
+    public BigDecimal getMontant() {
+        return montant;
     }
 
-    public void setAllocatedAmount(BigDecimal allocatedAmount) {
-        this.allocatedAmount = allocatedAmount;
-    }
-
-    public BigDecimal getSpentAmount() {
-        return spentAmount;
-    }
-
-    public void setSpentAmount(BigDecimal spentAmount) {
-        this.spentAmount = spentAmount;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public Integer getFiscalYear() {
-        return fiscalYear;
-    }
-
-    public void setFiscalYear(Integer fiscalYear) {
-        this.fiscalYear = fiscalYear;
+    public void setMontant(BigDecimal montant) {
+        this.montant = montant;
     }
 
     public LocalDateTime getCreatedAt() {

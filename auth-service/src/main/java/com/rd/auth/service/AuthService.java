@@ -42,10 +42,10 @@ public class AuthService {
 
         user = userRepository.save(user);
 
-        String accessToken = jwtService.generateToken(user.getUsername(), user.getRole().name(), user.getId());
+        String accessToken = jwtService.generateToken(user.getUsername(), user.getRole().name(), user.getIdUser());
         String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
-        return new AuthResponse(accessToken, refreshToken, user.getId(), user.getUsername(), user.getRole().name());
+        return new AuthResponse(accessToken, refreshToken, user.getIdUser(), user.getUsername(), user.getRole().name());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -59,10 +59,10 @@ public class AuthService {
             throw new RuntimeException("User account is disabled");
         }
 
-        String accessToken = jwtService.generateToken(user.getUsername(), user.getRole().name(), user.getId());
+        String accessToken = jwtService.generateToken(user.getUsername(), user.getRole().name(), user.getIdUser());
         String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
-        return new AuthResponse(accessToken, refreshToken, user.getId(), user.getUsername(), user.getRole().name());
+        return new AuthResponse(accessToken, refreshToken, user.getIdUser(), user.getUsername(), user.getRole().name());
     }
 
     public Boolean validateToken(String token) {

@@ -10,116 +10,60 @@ import java.time.LocalDateTime;
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_expense")
+    private Long idExpense;
 
-    @Column(name = "project_id")
+    @Column(name = "id_project")
     @NotNull
-    private Long projectId;
+    private Long idProject;
 
-    @Column(name = "budget_id")
-    private Long budgetId;
-
-    @Column(name = "amount", precision = 19, scale = 2)
+    @Column(name = "id_team")
     @NotNull
-    private BigDecimal amount;
+    private Long idTeam;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "category")
-    private String category; // EQUIPMENT, TRAVEL, PERSONNEL, OTHER
-
-    @Column(name = "currency")
-    private String currency = "EUR";
-
-    @Column(name = "expense_date")
-    private LocalDateTime expenseDate;
-
-    @Column(name = "created_by")
-    private Long createdBy;
+    @Column(name = "montant", precision = 19, scale = 2)
+    @NotNull
+    private BigDecimal montant;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        if (expenseDate == null) {
-            expenseDate = LocalDateTime.now();
-        }
         createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
+    public Long getIdExpense() {
+        return idExpense;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdExpense(Long idExpense) {
+        this.idExpense = idExpense;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public Long getIdProject() {
+        return idProject;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setIdProject(Long idProject) {
+        this.idProject = idProject;
     }
 
-    public Long getBudgetId() {
-        return budgetId;
+    public Long getIdTeam() {
+        return idTeam;
     }
 
-    public void setBudgetId(Long budgetId) {
-        this.budgetId = budgetId;
+    public void setIdTeam(Long idTeam) {
+        this.idTeam = idTeam;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getMontant() {
+        return montant;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public LocalDateTime getExpenseDate() {
-        return expenseDate;
-    }
-
-    public void setExpenseDate(LocalDateTime expenseDate) {
-        this.expenseDate = expenseDate;
-    }
-
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
+    public void setMontant(BigDecimal montant) {
+        this.montant = montant;
     }
 
     public LocalDateTime getCreatedAt() {
