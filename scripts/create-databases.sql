@@ -1,4 +1,7 @@
--- Script SQL pour créer toutes les bases de données et utilisateurs
+-- ============================================================================
+-- SCRIPT POUR PSQL (ligne de commande)
+-- Pour pgAdmin, utilisez plutôt : create-all-databases.sql
+-- ============================================================================
 -- À exécuter en tant que superutilisateur PostgreSQL
 
 -- Créer les utilisateurs
@@ -40,17 +43,5 @@ GRANT ALL ON SCHEMA public TO finance_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO finance_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO finance_user;
 
--- Vérification
-\c auth_db
-\dt
-
-\c project_db
-\dt
-
-\c validation_db
-\dt
-
-\c finance_db
-\dt
-
-\q
+-- Note : Pour créer les tables, exécutez les scripts de migration Flyway
+-- ou utilisez le script create-all-databases.sql dans pgAdmin
