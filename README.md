@@ -2,6 +2,9 @@
 
 Architecture microservices complète avec Spring Boot, Kubernetes, et PostgreSQL.
 
+> **⚠️ IMPORTANT :** Ce projet utilise maintenant **Keycloak** (au lieu de JWT) et **NGINX** (au lieu de Spring Cloud Gateway).  
+> **👉 Commencez par lire `ACTION_PLAN.md` pour savoir quoi faire maintenant !**
+
 ## 🏗️ Architecture
 
 Voir [ARCHITECTURE.md](./ARCHITECTURE.md) pour les détails complets.
