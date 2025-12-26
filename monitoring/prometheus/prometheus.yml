@@ -1,0 +1,39 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'gateway-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['nginx-gateway:8080']
+        labels:
+          service: 'nginx-gateway'
+  
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8081']
+        labels:
+          service: 'auth-service'
+  
+  - job_name: 'project-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['project-service:8082']
+        labels:
+          service: 'project-service'
+  
+  - job_name: 'validation-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['validation-service:8083']
+        labels:
+          service: 'validation-service'
+  
+  - job_name: 'finance-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['finance-service:8084']
+        labels:
+          service: 'finance-service'

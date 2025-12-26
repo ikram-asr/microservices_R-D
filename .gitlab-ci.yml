@@ -1,0 +1,257 @@
+stages:
+  - build
+  - test
+  - build-images
+  - deploy
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
+# Cache Maven dependencies
+cache:
+  paths:
+    - .m2/repository/
+
+# Build stage
+build:gateway:
+  stage: build
+  image: maven:3.8-openjdk-17
+  script:
+    - cd gateway-service
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - gateway-service/target/*.jar
+    expire_in: 1 hour
+
+build:auth:
+  stage: build
+  image: maven:3.8-openjdk-17
+  script:
+    - cd auth-service
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - auth-service/target/*.jar
+    expire_in: 1 hour
+
+build:project:
+  stage: build
+  image: maven:3.8-openjdk-17
+  script:
+    - cd project-service
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - project-service/target/*.jar
+    expire_in: 1 hour
+
+build:validation:
+  stage: build
+  image: maven:3.8-openjdk-17
+  script:
+    - cd validation-service
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - validation-service/target/*.jar
+    expire_in: 1 hour
+
+build:finance:
+  stage: build
+  image: maven:3.8-openjdk-17
+  script:
+    - cd finance-service
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - finance-service/target/*.jar
+    expire_in: 1 hour
+
+# Test stage
+test:gateway:
+  stage: test
+  image: maven:3.8-openjdk-17
+  script:
+    - cd gateway-service
+    - mvn test
+  dependencies:
+    - build:gateway
+
+test:auth:
+  stage: test
+  image: maven:3.8-openjdk-17
+  script:
+    - cd auth-service
+    - mvn test
+  dependencies:
+    - build:auth
+
+test:project:
+  stage: test
+  image: maven:3.8-openjdk-17
+  script:
+    - cd project-service
+    - mvn test
+  dependencies:
+    - build:project
+
+test:validation:
+  stage: test
+  image: maven:3.8-openjdk-17
+  script:
+    - cd validation-service
+    - mvn test
+  dependencies:
+    - build:validation
+
+test:finance:
+  stage: test
+  image: maven:3.8-openjdk-17
+  script:
+    - cd finance-service
+    - mvn test
+  dependencies:
+    - build:finance
+
+# Build Docker images
+build-image:gateway:
+  stage: build-images
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd gateway-service
+    - docker build -t $CI_REGISTRY_IMAGE/gateway-service:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/gateway-service:latest .
+    - docker push $CI_REGISTRY_IMAGE/gateway-service:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE/gateway-service:latest
+  dependencies:
+    - build:gateway
+
+build-image:auth:
+  stage: build-images
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd auth-service
+    - docker build -t $CI_REGISTRY_IMAGE/auth-service:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/auth-service:latest .
+    - docker push $CI_REGISTRY_IMAGE/auth-service:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE/auth-service:latest
+  dependencies:
+    - build:auth
+
+build-image:project:
+  stage: build-images
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd project-service
+    - docker build -t $CI_REGISTRY_IMAGE/project-service:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/project-service:latest .
+    - docker push $CI_REGISTRY_IMAGE/project-service:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE/project-service:latest
+  dependencies:
+    - build:project
+
+build-image:validation:
+  stage: build-images
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd validation-service
+    - docker build -t $CI_REGISTRY_IMAGE/validation-service:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/validation-service:latest .
+    - docker push $CI_REGISTRY_IMAGE/validation-service:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE/validation-service:latest
+  dependencies:
+    - build:validation
+
+build-image:finance:
+  stage: build-images
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd finance-service
+    - docker build -t $CI_REGISTRY_IMAGE/finance-service:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/finance-service:latest .
+    - docker push $CI_REGISTRY_IMAGE/finance-service:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE/finance-service:latest
+  dependencies:
+    - build:finance
+
+build-image:nginx:
+  stage: build-images
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd nginx
+    - docker build -t $CI_REGISTRY_IMAGE/nginx-gateway:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/nginx-gateway:latest .
+    - docker push $CI_REGISTRY_IMAGE/nginx-gateway:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE/nginx-gateway:latest
+
+# Deploy stage (Kubernetes)
+deploy:staging:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config use-context $KUBE_CONTEXT_STAGING
+    - kubectl set image deployment/gateway-service gateway-service=$CI_REGISTRY_IMAGE/gateway-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/auth-service auth-service=$CI_REGISTRY_IMAGE/auth-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/project-service project-service=$CI_REGISTRY_IMAGE/project-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/validation-service validation-service=$CI_REGISTRY_IMAGE/validation-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/finance-service finance-service=$CI_REGISTRY_IMAGE/finance-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl rollout status deployment/gateway-service -n rd-microservices
+    - kubectl rollout status deployment/auth-service -n rd-microservices
+    - kubectl rollout status deployment/project-service -n rd-microservices
+    - kubectl rollout status deployment/validation-service -n rd-microservices
+    - kubectl rollout status deployment/finance-service -n rd-microservices
+  only:
+    - develop
+  dependencies:
+    - build-image:gateway
+    - build-image:auth
+    - build-image:project
+    - build-image:validation
+    - build-image:finance
+
+deploy:production:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config use-context $KUBE_CONTEXT_PRODUCTION
+    - kubectl set image deployment/gateway-service gateway-service=$CI_REGISTRY_IMAGE/gateway-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/auth-service auth-service=$CI_REGISTRY_IMAGE/auth-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/project-service project-service=$CI_REGISTRY_IMAGE/project-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/validation-service validation-service=$CI_REGISTRY_IMAGE/validation-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl set image deployment/finance-service finance-service=$CI_REGISTRY_IMAGE/finance-service:$CI_COMMIT_SHORT_SHA -n rd-microservices
+    - kubectl rollout status deployment/gateway-service -n rd-microservices
+    - kubectl rollout status deployment/auth-service -n rd-microservices
+    - kubectl rollout status deployment/project-service -n rd-microservices
+    - kubectl rollout status deployment/validation-service -n rd-microservices
+    - kubectl rollout status deployment/finance-service -n rd-microservices
+  only:
+    - main
+    - master
+  when: manual
+  dependencies:
+    - build-image:gateway
+    - build-image:auth
+    - build-image:project
+    - build-image:validation
+    - build-image:finance

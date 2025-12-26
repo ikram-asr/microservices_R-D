@@ -1,0 +1,88 @@
+{
+  "dashboard": {
+    "title": "R&D Microservices Dashboard",
+    "tags": ["microservices", "rd"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count[5m])",
+            "legendFormat": "{{service}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m]))",
+            "legendFormat": "{{service}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{status=~\"5..\"}[5m])",
+            "legendFormat": "{{service}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "JVM Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes / jvm_memory_max_bytes * 100",
+            "legendFormat": "{{service}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Service Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"gateway-service\"}",
+            "legendFormat": "Gateway"
+          },
+          {
+            "expr": "up{job=\"auth-service\"}",
+            "legendFormat": "Auth"
+          },
+          {
+            "expr": "up{job=\"project-service\"}",
+            "legendFormat": "Project"
+          },
+          {
+            "expr": "up{job=\"validation-service\"}",
+            "legendFormat": "Validation"
+          },
+          {
+            "expr": "up{job=\"finance-service\"}",
+            "legendFormat": "Finance"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 24, "x": 0, "y": 16}
+      }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 16,
+    "version": 1
+  }
+}

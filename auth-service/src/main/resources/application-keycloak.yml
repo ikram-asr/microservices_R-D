@@ -1,13 +1,13 @@
 server:
-  port: 8084
+  port: 8081
 
 spring:
   application:
-    name: finance-service
+    name: auth-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/finance_db}
-    username: postgres
-    password: Ma9la123
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/auth_db}
+    username: ${SPRING_DATASOURCE_USERNAME:auth_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:auth_password}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -22,6 +22,12 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+keycloak:
+  server-url: ${KEYCLOAK_SERVER_URL:http://keycloak:8080}
+  realm: ${KEYCLOAK_REALM:rd-microservices}
+  client-id: ${KEYCLOAK_CLIENT_ID:rd-gateway}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:rd-gateway-secret-change-in-production}
+
 management:
   endpoints:
     web:
@@ -34,5 +40,6 @@ management:
 
 logging:
   level:
-    com.rd.finance: DEBUG
+    com.rd.auth: DEBUG
+    org.springframework.security: INFO
 

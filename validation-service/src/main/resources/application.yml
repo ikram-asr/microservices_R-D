@@ -6,8 +6,8 @@ spring:
     name: validation-service
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/validation_db}
-    username: ${SPRING_DATASOURCE_USERNAME:validation_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:validation_password}
+    username: postgres
+    password: Ma9la123
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

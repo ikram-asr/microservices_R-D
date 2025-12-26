@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-gateway
+  namespace: rd-microservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-gateway
+  template:
+    metadata:
+      labels:
+        app: nginx-gateway
+    spec:
+      containers:
+      - name: nginx
+        image: nginx-gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: rd-microservices
+data:
+  default.conf: |
+    upstream auth-service {
+        server auth-service:8081;
+    }
+    upstream project-service {
+        server project-service:8082;
+    }
+    upstream validation-service {
+        server validation-service:8083;
+    }
+    upstream finance-service {
+        server finance-service:8084;
+    }
+    upstream keycloak {
+        server keycloak:8080;
+    }
+    server {
+        listen 8080;
+        server_name localhost;
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        if ($request_method = 'OPTIONS') {
+            return 204;
+        }
+        location /auth/ {
+            proxy_pass http://keycloak/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+        location /api/auth/ {
+            proxy_pass http://auth-service/auth/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /api/projects/ {
+            auth_request /validate;
+            auth_request_set $user_id $upstream_http_x_user_id;
+            proxy_pass http://project-service/projects/;
+            proxy_set_header X-User-Id $user_id;
+        }
+        location /api/validations/ {
+            auth_request /validate;
+            proxy_pass http://validation-service/validations/;
+        }
+        location /api/finance/ {
+            auth_request /validate;
+            proxy_pass http://finance-service/finance/;
+        }
+        location = /validate {
+            internal;
+            proxy_pass http://keycloak/realms/rd-microservices/protocol/openid-connect/userinfo;
+            proxy_pass_request_body off;
+            proxy_set_header Content-Length "";
+            proxy_set_header Authorization $http_authorization;
+        }
+        location /health {
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-gateway
+  namespace: rd-microservices
+spec:
+  selector:
+    app: nginx-gateway
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: LoadBalancer
+

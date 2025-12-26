@@ -17,6 +17,18 @@ Voir [ARCHITECTURE.md](./ARCHITECTURE.md) pour les détails complets.
 
 ## 🚀 Démarrage Rapide
 
+### Étape 0 : Créer les Bases de Données (si pas déjà fait)
+
+**Option A : Avec pgAdmin (Recommandé)**
+1. Ouvrez pgAdmin
+2. Exécutez le script `scripts/create-all-databases.sql` section par section
+3. Exécutez `scripts/insert-test-data.sql` pour insérer des données de test
+
+**Option B : Avec psql**
+```bash
+psql -U postgres -f scripts/create-databases.sql
+```
+
 ### Option 1 : Docker Compose (Développement)
 
 ```bash
@@ -28,6 +40,10 @@ sleep 30
 
 # Build et démarrer tous les services
 docker-compose up --build
+
+# Tester rapidement avec le script
+chmod +x scripts/quick-start.sh
+./scripts/quick-start.sh
 ```
 
 ### Option 2 : Kubernetes (Production)
@@ -97,6 +113,19 @@ Chaque service nécessite :
 
 ## 🧪 Tests
 
+### Tests Rapides
+
+```bash
+# Linux/Mac
+chmod +x scripts/quick-start.sh
+./scripts/quick-start.sh
+
+# Windows PowerShell
+.\scripts\quick-start.ps1
+```
+
+### Tests Unitaires et Intégration
+
 ```bash
 # Tests unitaires
 mvn test
@@ -104,6 +133,8 @@ mvn test
 # Tests d'intégration
 mvn verify
 ```
+
+Voir `NEXT_STEPS.md` pour un guide complet des tests après la création des bases de données.
 
 ## 📊 Monitoring
 
