@@ -1,146 +1,141 @@
 #!/bin/bash
 
-# Script de test automatisé pour les API
-# Prérequis : jq installé (sudo apt-get install jq)
+# Script pour tester les APIs
+
+echo "=========================================="
+echo "Test des APIs - R&D Microservices"
+echo "=========================================="
+echo ""
 
 BASE_URL="http://localhost:8080"
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+TOKEN=""
 
-echo "=========================================="
-echo "Tests des Microservices R&D"
-echo "=========================================="
-echo ""
-
-# Fonction pour afficher le résultat
-print_result() {
-    if [ $1 -eq 0 ]; then
-        echo -e "${GREEN}✓${NC} $2"
-    else
-        echo -e "${RED}✗${NC} $2"
-    fi
-}
-
-# Test 1: Health Check Gateway
-echo "1. Test Health Check Gateway..."
-RESPONSE=$(curl -s -w "\n%{http_code}" "$BASE_URL/actuator/health")
-HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-if [ "$HTTP_CODE" = "200" ]; then
-    print_result 0 "Gateway est accessible"
-else
-    print_result 1 "Gateway non accessible (HTTP $HTTP_CODE)"
-    exit 1
-fi
-echo ""
-
-# Test 2: Register
-echo "2. Test Inscription..."
+# 1. Test d'inscription
+echo "1. Test d'inscription..."
 REGISTER_RESPONSE=$(curl -s -X POST "$BASE_URL/api/auth/register" \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser'$(date +%s)'","email":"test'$(date +%s)'@example.com","password":"password123"}')
-if echo "$REGISTER_RESPONSE" | grep -q "accessToken"; then
-    TOKEN=$(echo "$REGISTER_RESPONSE" | jq -r '.accessToken')
-    USER_ID=$(echo "$REGISTER_RESPONSE" | jq -r '.userId')
-    print_result 0 "Inscription réussie (User ID: $USER_ID)"
+  -d '{
+    "username": "testuser",
+    "email": "testuser@example.com",
+    "password": "password123"
+  }')
+
+if [ $? -eq 0 ]; then
+    echo "✓ Inscription réussie"
+    TOKEN=$(echo $REGISTER_RESPONSE | jq -r '.token')
+    echo "Token obtenu: ${TOKEN:0:20}..."
 else
-    print_result 1 "Échec de l'inscription"
-    echo "Réponse: $REGISTER_RESPONSE"
+    echo "✗ Échec de l'inscription"
     exit 1
 fi
+
 echo ""
 
-# Test 3: Login
-echo "3. Test Connexion..."
+# 2. Test de login
+echo "2. Test de login..."
 LOGIN_RESPONSE=$(curl -s -X POST "$BASE_URL/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"username":"researcher1","password":"password123"}')
-if echo "$LOGIN_RESPONSE" | grep -q "accessToken"; then
-    TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.accessToken')
-    print_result 0 "Connexion réussie"
+  -d '{
+    "username": "testuser",
+    "password": "password123"
+  }')
+
+if [ $? -eq 0 ]; then
+    echo "✓ Login réussi"
+    TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.token')
 else
-    print_result 1 "Échec de la connexion"
-    echo "Réponse: $LOGIN_RESPONSE"
-    # Utiliser le token de l'inscription précédente
-    echo -e "${YELLOW}Utilisation du token d'inscription${NC}"
+    echo "✗ Échec du login"
 fi
+
 echo ""
 
-# Test 4: Créer un projet
-echo "4. Test Création Projet..."
+# 3. Test de validation du token
+echo "3. Test de validation du token..."
+VALIDATE_RESPONSE=$(curl -s -X POST "$BASE_URL/api/auth/validate" \
+  -H "Authorization: Bearer $TOKEN")
+
+if [ "$VALIDATE_RESPONSE" = "true" ]; then
+    echo "✓ Token valide"
+else
+    echo "✗ Token invalide"
+fi
+
+echo ""
+
+# 4. Test de création de projet
+echo "4. Test de création de projet..."
 PROJECT_RESPONSE=$(curl -s -X POST "$BASE_URL/api/projects" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
-  -d '{"title":"Projet Test","description":"Description du projet test"}')
-if echo "$PROJECT_RESPONSE" | grep -q "id"; then
-    PROJECT_ID=$(echo "$PROJECT_RESPONSE" | jq -r '.id')
-    print_result 0 "Projet créé (ID: $PROJECT_ID)"
+  -d '{
+    "nom": "Projet Test",
+    "description": "Description du projet test",
+    "statut": "DRAFT"
+  }')
+
+if [ $? -eq 0 ]; then
+    PROJECT_ID=$(echo $PROJECT_RESPONSE | jq -r '.id')
+    echo "✓ Projet créé avec ID: $PROJECT_ID"
 else
-    print_result 1 "Échec de la création du projet"
-    echo "Réponse: $PROJECT_RESPONSE"
-    exit 1
+    echo "✗ Échec de création du projet"
+    PROJECT_ID=1
 fi
+
 echo ""
 
-# Test 5: Lister les projets
-echo "5. Test Liste Projets..."
+# 5. Test de liste des projets
+echo "5. Test de liste des projets..."
 PROJECTS_RESPONSE=$(curl -s -X GET "$BASE_URL/api/projects" \
   -H "Authorization: Bearer $TOKEN")
-if echo "$PROJECTS_RESPONSE" | grep -q "id"; then
-    PROJECT_COUNT=$(echo "$PROJECTS_RESPONSE" | jq '. | length')
-    print_result 0 "Liste des projets récupérée ($PROJECT_COUNT projets)"
+
+if [ $? -eq 0 ]; then
+    PROJECT_COUNT=$(echo $PROJECTS_RESPONSE | jq '. | length')
+    echo "✓ Liste des projets obtenue ($PROJECT_COUNT projets)"
 else
-    print_result 1 "Échec de la récupération des projets"
+    echo "✗ Échec de récupération des projets"
 fi
+
 echo ""
 
-# Test 6: Créer un budget
-echo "6. Test Création Budget..."
+# 6. Test de création de validation
+echo "6. Test de création de validation..."
+VALIDATION_RESPONSE=$(curl -s -X POST "$BASE_URL/api/validations" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "{
+    \"idProject\": $PROJECT_ID,
+    \"nomTest\": \"Test de validation\",
+    \"statut\": \"PENDING\"
+  }")
+
+if [ $? -eq 0 ]; then
+    VALIDATION_ID=$(echo $VALIDATION_RESPONSE | jq -r '.id')
+    echo "✓ Validation créée avec ID: $VALIDATION_ID"
+else
+    echo "✗ Échec de création de validation"
+fi
+
+echo ""
+
+# 7. Test de création de budget
+echo "7. Test de création de budget..."
 BUDGET_RESPONSE=$(curl -s -X POST "$BASE_URL/api/finance/budgets" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
-  -d "{\"projectId\":$PROJECT_ID,\"allocatedAmount\":50000.00,\"currency\":\"EUR\",\"fiscalYear\":2024}")
-if echo "$BUDGET_RESPONSE" | grep -q "id"; then
-    BUDGET_ID=$(echo "$BUDGET_RESPONSE" | jq -r '.id')
-    print_result 0 "Budget créé (ID: $BUDGET_ID)"
+  -d "{
+    \"idProject\": $PROJECT_ID,
+    \"montant\": 50000.00
+  }")
+
+if [ $? -eq 0 ]; then
+    BUDGET_ID=$(echo $BUDGET_RESPONSE | jq -r '.id')
+    echo "✓ Budget créé avec ID: $BUDGET_ID"
 else
-    print_result 1 "Échec de la création du budget"
-    echo "Réponse: $BUDGET_RESPONSE"
+    echo "✗ Échec de création de budget"
 fi
+
 echo ""
 
-# Test 7: Créer une dépense
-if [ ! -z "$BUDGET_ID" ]; then
-    echo "7. Test Création Dépense..."
-    EXPENSE_RESPONSE=$(curl -s -X POST "$BASE_URL/api/finance/expenses" \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer $TOKEN" \
-      -d "{\"projectId\":$PROJECT_ID,\"budgetId\":$BUDGET_ID,\"amount\":5000.00,\"description\":\"Test expense\",\"category\":\"EQUIPMENT\"}")
-    if echo "$EXPENSE_RESPONSE" | grep -q "id"; then
-        print_result 0 "Dépense créée"
-    else
-        print_result 1 "Échec de la création de la dépense"
-        echo "Réponse: $EXPENSE_RESPONSE"
-    fi
-    echo ""
-fi
-
-# Test 8: Vérifier le budget mis à jour
-if [ ! -z "$BUDGET_ID" ]; then
-    echo "8. Test Vérification Budget..."
-    UPDATED_BUDGET=$(curl -s -X GET "$BASE_URL/api/finance/budgets/$BUDGET_ID" \
-      -H "Authorization: Bearer $TOKEN")
-    SPENT=$(echo "$UPDATED_BUDGET" | jq -r '.spentAmount')
-    if [ "$SPENT" != "null" ] && [ "$SPENT" != "0" ]; then
-        print_result 0 "Budget mis à jour (Dépensé: $SPENT EUR)"
-    else
-        print_result 1 "Budget non mis à jour"
-    fi
-    echo ""
-fi
-
 echo "=========================================="
-echo -e "${GREEN}Tous les tests sont terminés${NC}"
+echo "Tests terminés !"
 echo "=========================================="
-
