@@ -16,7 +16,7 @@
     <artifactId>project-service</artifactId>
     <version>1.0.0</version>
     <name>Project Service</name>
-    <description>R&D Project Management Service</description>
+    <description>R_D Project Management Service</description>
     
     <properties>
         <java.version>17</java.version>
@@ -44,10 +44,7 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

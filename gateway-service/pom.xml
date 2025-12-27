@@ -16,7 +16,7 @@
     <artifactId>gateway-service</artifactId>
     <version>1.0.0</version>
     <name>Gateway Service</name>
-    <description>API Gateway for R&D Microservices</description>
+    <description>API Gateway for R_D Microservices</description>
     
     <properties>
         <java.version>17</java.version>
