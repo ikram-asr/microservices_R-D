@@ -93,6 +93,25 @@ docker-compose up -d
 docker-compose ps
 ```
 
+**⚠️ Si les conteneurs PostgreSQL échouent :**
+1. Voir `TROUBLESHOOTING.md` pour les solutions détaillées
+2. Ou exécuter le script de correction :
+   ```powershell
+   # Windows PowerShell
+   .\scripts\fix-postgres.ps1
+   ```
+   ```bash
+   # Linux/Mac
+   chmod +x scripts/fix-postgres.sh
+   ./scripts/fix-postgres.sh
+   ```
+3. Ou démarrer les bases une par une :
+   ```bash
+   docker-compose up -d postgres-auth postgres-project postgres-validation postgres-finance keycloak-db
+   sleep 30  # ou Start-Sleep -Seconds 30 sur PowerShell
+   docker-compose up -d
+   ```
+
 ### 2.2 Vérifier les Services
 
 **Attendre 1-2 minutes pour que tout démarre, puis vérifier :**
