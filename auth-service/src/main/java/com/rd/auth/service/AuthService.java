@@ -34,18 +34,23 @@ public class AuthService {
             throw new RuntimeException("Email already exists");
         }
 
+        // Créer l'utilisateur
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.RESEARCHER);
+        user.setEnabled(true);
 
-        user = userRepository.save(user);
+        // Sauvegarder en base
+        User savedUser = userRepository.save(user);
 
-        String accessToken = jwtService.generateToken(user.getUsername(), user.getRole().name(), user.getIdUser());
-        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+        String accessToken = jwtService.generateToken(savedUser.getUsername(), savedUser.getRole().name(), savedUser.getIdUser());
+        String refreshToken = jwtService.generateRefreshToken(savedUser.getUsername());
 
-        return new AuthResponse(accessToken, refreshToken, user.getIdUser(), user.getUsername(), user.getRole().name());
+        return new AuthResponse(accessToken, refreshToken, savedUser.getIdUser(), savedUser.getUsername(), savedUser.getRole().name());
+
+
     }
 
     public AuthResponse login(LoginRequest request) {

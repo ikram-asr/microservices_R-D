@@ -7,7 +7,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres-auth:5432/auth_db}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:Ma9la123}
+    password: ${SPRING_DATASOURCE_PASSWORD:bifo2004}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -32,9 +32,9 @@ management:
     web:
       exposure:
         include: health,info,prometheus
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
 
 logging:

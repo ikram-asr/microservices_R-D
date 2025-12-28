@@ -5,9 +5,9 @@ spring:
   application:
     name: finance-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/finance_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/finance_db}
     username: postgres
-    password: Ma9la123
+    password: bifo2004
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -27,9 +27,9 @@ management:
     web:
       exposure:
         include: health,info,prometheus
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
 
 logging:

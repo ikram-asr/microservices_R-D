@@ -28,7 +28,7 @@ services:
     container_name: keycloak-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ma9la123
+      POSTGRES_PASSWORD: bifo2004
       POSTGRES_DB: keycloak
     volumes:
       - keycloak-db-data:/var/lib/postgresql/data
@@ -47,7 +47,7 @@ services:
       dockerfile: Dockerfile
     container_name: nginx-gateway
     ports:
-      - "8085:8080"
+      - "8085:8085"
     depends_on:
       - keycloak
       - auth-service
@@ -141,10 +141,10 @@ services:
     container_name: postgres-auth
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ma9la123
+      POSTGRES_PASSWORD: bifo2004
       POSTGRES_DB: auth_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres-auth-data:/var/lib/postgresql/data
     networks:
@@ -160,7 +160,7 @@ services:
     container_name: postgres-project
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ma9la123
+      POSTGRES_PASSWORD: bifo2004
       POSTGRES_DB: project_db
     ports:
       - "5434:5432"
@@ -179,7 +179,7 @@ services:
     container_name: postgres-validation
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ma9la123
+      POSTGRES_PASSWORD: bifo2004
       POSTGRES_DB: validation_db
     ports:
       - "5435:5432"
@@ -198,7 +198,7 @@ services:
     container_name: postgres-finance
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ma9la123
+      POSTGRES_PASSWORD: bifo2004
       POSTGRES_DB: finance_db
     ports:
       - "5436:5432"
@@ -221,7 +221,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Ma9la123
+      SPRING_DATASOURCE_PASSWORD: bifo2004
       JWT_SECRET: oK9V1Yv7fF2lX5JgH8KzQ3dP+S1R0wYuL2d7Aq3ZkF4=
     ports:
       - "8081:8081"
@@ -244,7 +244,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-project:5432/project_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Ma9la123
+      SPRING_DATASOURCE_PASSWORD: bifo2004
     ports:
       - "8082:8082"
     depends_on:
@@ -266,7 +266,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-validation:5432/validation_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Ma9la123
+      SPRING_DATASOURCE_PASSWORD: bifo2004
     ports:
       - "8083:8083"
     depends_on:
@@ -288,7 +288,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-finance:5432/finance_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Ma9la123
+      SPRING_DATASOURCE_PASSWORD: bifo2004
     ports:
       - "8084:8084"
     depends_on:
