@@ -198,9 +198,7 @@ kubectl create secret generic keycloak-secret \
   --from-literal=db-password='keycloak_password' \
   -n rd-microservices
 
-kubectl create secret generic grafana-secret \
-  --from-literal=admin-password='admin123' \
-  -n rd-microservices
+kubectl create secret generic grafana-secret from-literal=admin-password='admin123' -n rd-microservices
 
 # Ou utiliser le fichier (modifier les mots de passe d'abord)
 kubectl apply -f k8s/secrets.yaml -n rd-microservices

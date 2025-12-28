@@ -18,7 +18,7 @@ spec:
         image: gateway-service:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+        - containerPort: 8085
         env:
         - name: JWT_SECRET
           valueFrom:
@@ -35,13 +35,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /actuator/health
-            port: 8080
+            port: 8085
           initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /actuator/health
-            port: 8080
+            port: 8085
           initialDelaySeconds: 30
           periodSeconds: 5
 ---
@@ -54,7 +54,7 @@ spec:
   selector:
     app: gateway-service
   ports:
-  - port: 8080
-    targetPort: 8080
+  - port: 8085
+    targetPort: 8085
   type: LoadBalancer
 
