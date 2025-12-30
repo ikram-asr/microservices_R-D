@@ -13,9 +13,20 @@ spec:
       labels:
         app: project-service
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              until nc -zv postgres-project 5432; do
+                echo "Waiting for PostgreSQL..."
+                sleep 5
+              done
       containers:
       - name: project-service
-        image: project-service:latest
+        image: microservices_r-d-project-service:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8082

@@ -15,10 +15,10 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx-gateway:latest
+        image: microservices_r-d-nginx-gateway:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+        - containerPort: 8085
         volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/conf.d
@@ -32,13 +32,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8085
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
-            port: 8080
+            port: 8085
           initialDelaySeconds: 10
           periodSeconds: 5
       volumes:
@@ -56,52 +56,90 @@ data:
     upstream auth-service {
         server auth-service:8081;
     }
+    
     upstream project-service {
         server project-service:8082;
     }
+    
     upstream validation-service {
         server validation-service:8083;
     }
+    
     upstream finance-service {
         server finance-service:8084;
     }
+    
     upstream keycloak {
         server keycloak:8080;
     }
+    
     server {
-        listen 8080;
+        listen 8085;
         server_name localhost;
+    
         add_header 'Access-Control-Allow-Origin' '*' always;
         add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
         add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+    
         if ($request_method = 'OPTIONS') {
             return 204;
         }
-        location /auth/ {
+    
+        location /keycloak/ {
             proxy_pass http://keycloak/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
-        location /api/auth/ {
-            proxy_pass http://auth-service/auth/;
+    
+        location /auth/ {
+            proxy_pass http://auth-service;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
-        location /api/projects/ {
-            auth_request /validate;
+    
+        location = /projects {
+            return 301 /projects/;
+        }
+    
+        location /projects/ {
+            # auth_request /validate;
             auth_request_set $user_id $upstream_http_x_user_id;
-            proxy_pass http://project-service/projects/;
+            auth_request_set $user_role $upstream_http_x_user_role;
+    
+            proxy_pass http://project-service/projects;
             proxy_set_header X-User-Id $user_id;
+            proxy_set_header X-User-Role $user_role;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
-        location /api/validations/ {
-            auth_request /validate;
-            proxy_pass http://validation-service/validations/;
+    
+        location /validations/ {
+            # auth_request /validate;
+            auth_request_set $user_id $upstream_http_x_user_id;
+            auth_request_set $user_role $upstream_http_x_user_role;
+    
+            proxy_pass http://validation-service/validations;
+            proxy_set_header X-User-Id $user_id;
+            proxy_set_header X-User-Role $user_role;
         }
-        location /api/finance/ {
-            auth_request /validate;
+    
+        location /finance/ {
+            # auth_request /validate;
+            auth_request_set $user_id $upstream_http_x_user_id;
+            auth_request_set $user_role $upstream_http_x_user_role;
+    
             proxy_pass http://finance-service/finance/;
+            proxy_set_header X-User-Id $user_id;
+            proxy_set_header X-User-Role $user_role;
         }
+    
         location = /validate {
             internal;
             proxy_pass http://keycloak/realms/rd-microservices/protocol/openid-connect/userinfo;
@@ -109,6 +147,7 @@ data:
             proxy_set_header Content-Length "";
             proxy_set_header Authorization $http_authorization;
         }
+    
         location /health {
             return 200 "healthy\n";
             add_header Content-Type text/plain;
@@ -124,7 +163,7 @@ spec:
   selector:
     app: nginx-gateway
   ports:
-  - port: 8080
-    targetPort: 8080
+  - port: 8085
+    targetPort: 8085
   type: LoadBalancer
 

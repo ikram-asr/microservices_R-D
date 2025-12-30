@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: gateway-service
-        image: gateway-service:latest
+        image: microservices_r-d-gateway-service:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8085
@@ -57,4 +57,3 @@ spec:
   - port: 8085
     targetPort: 8085
   type: LoadBalancer
-

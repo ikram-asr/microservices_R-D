@@ -13,9 +13,20 @@ spec:
       labels:
         app: validation-service
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              until nc -zv postgres-validation 5432; do
+                echo "Waiting for PostgreSQL..."
+                sleep 5
+              done
       containers:
       - name: validation-service
-        image: validation-service:latest
+        image: microservices_r-d-validation-service:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8083
@@ -64,4 +75,3 @@ spec:
   - port: 8083
     targetPort: 8083
   type: ClusterIP
-
