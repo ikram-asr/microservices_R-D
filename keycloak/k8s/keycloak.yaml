@@ -104,7 +104,7 @@ spec:
           value: "true"
         ports:
         - containerPort: 8080
-        command: ["start-dev"]
+        args: ["start-dev"]
         resources:
           requests:
             memory: "512Mi"
